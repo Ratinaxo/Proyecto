@@ -16,26 +16,30 @@ void crearNuevaPartida(){
 }
 
 void instrucciones(){
-
   int opcionInstrucciones;
+  printf("1. Conocimientos generales\n");
+  printf("2. Turnos\n");
+  printf("0. Volver al menu principal\n");
+  scanf("%d", &opcionInstrucciones);
 
-  switch (opcionInstrucciones)
-  {
-    case 0:
-      break;
-    case 1:
-    
-      break;
+  while (true){
+    switch (opcionInstrucciones)
+    {
+      case 0:
+        return;
+      case 1:
+        printf("caso 1\n");
+        break;
 
-    case 2:
+      case 2:
+        printf("caso 2\n");
+        break;
 
-      break;
-
-    default:
-      printf("Ingrese una opcion valida\n");
-      break;
+      default:
+        printf("Ingrese una opcion valida\n");
+        break;
+    }
   }
-  return;
 }
 
 void generarNuevoTablero(){
@@ -47,7 +51,6 @@ int main(){
   int opcionMenuPrincipal;
   printf("1. Crear nueva partida\n");
   printf("2. Instrucciones\n");
-  printf("0. Salir\n");
   do{
     printf("Ingrese una opcion: ");
     scanf("%d", &opcionMenuPrincipal);
@@ -57,17 +60,19 @@ int main(){
 
   }while (opcionMenuPrincipal < 0 || opcionMenuPrincipal > 2);
 
-  switch (opcionMenuPrincipal)
-  {
-  case 0:
-    printf("Gracias por jugar\n");
-    exit(EXIT_SUCCESS);
-  case 1:
-    crearNuevaPartida();
-    break;
-  case 2:
-    instrucciones();
-    break;
+  while (true){
+    switch (opcionMenuPrincipal)
+    {
+    case 0:
+      printf("Gracias por jugar\n");
+      exit(EXIT_SUCCESS);
+    case 1:
+      crearNuevaPartida();
+      break;
+    case 2:
+      instrucciones();
+      break;
+    }
   }
   return EXIT_SUCCESS;
 }
