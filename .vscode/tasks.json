@@ -10,7 +10,9 @@
                 "${file}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "-lm"
+                "-lm",
+                "-LC:/LibrariesC",
+                "-lpdcurses"
             ],
             "options": {
                 "cwd": "${fileDirname}"
