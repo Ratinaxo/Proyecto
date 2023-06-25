@@ -1,0 +1,8 @@
+tipoHexagono *crearHexagono(int numero, char *terreno, int idHexagono){
+  tipoHexagono *nuevoHexagono = (tipoHexagono *)malloc(sizeof(tipoHexagono));
+  nuevoHexagono->numero = numero;
+  nuevoHexagono->terreno = terreno;
+  nuevoHexagono->arcos = createVector(6);
+  nuevoHexagono->idHexagono = idHexagono;
+  return nuevoHexagono;
+}
