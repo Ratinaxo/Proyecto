@@ -1,4 +1,4 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 //hacer un hexágono
@@ -32,4 +32,4 @@ int main(){
     printf("         \\     / \\     / \\     /\n");
     printf("          \\   /   \\   /   \\   /\n");
     printf("           \\ /     \\ /     \\ /\n");
-}
+}*/
