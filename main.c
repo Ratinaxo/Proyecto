@@ -23,11 +23,6 @@ typedef struct{
 }tipoHexagono;
 
 typedef struct{
-  char *nomJugador;
-  bool ocupado;
-}tipoCamino;
-
-typedef struct{
   char *nombre;
   uShort puntos; 
   Vector *recursos;
@@ -43,21 +38,27 @@ typedef struct {
 typedef struct{
   tipoHexagono *hexagono1;
   tipoHexagono *hexagono2;
-  tipoHexagono *hexagono3;
-  tipoHexagono *hexagono4;
-  tipoHexagono *hexagono5;
-  tipoHexagono *hexagono6;
-  tipoCamino *camino;
+  char *jugador;
 }tipoArco;
 
 
-tipoHexagono *crearHexagono(int numero, char *terreno , int idHexagono){
+tipoHexagono *crearTipoHexagono(int numero, char *terreno, int idHexagono, bool tieneLadron){
   tipoHexagono *nuevoHexagono = (tipoHexagono *)malloc(sizeof(tipoHexagono));
   nuevoHexagono->numero = numero;
   nuevoHexagono->terreno = terreno;
   nuevoHexagono->arcos = createVector(6);
   nuevoHexagono->idHexagono = idHexagono;
+  nuevoHexagono->tieneRobinson = tieneLadron;
   return nuevoHexagono;
+}
+
+
+tipoArco *crearArco(tipoHexagono *hex1, tipoHexagono *hex2){
+  tipoArco *nuevoArco = (tipoArco *)malloc(sizeof(tipoArco));
+  nuevoArco->hexagono1 = hex1;
+  nuevoArco->hexagono2 = hex2;
+  nuevoArco->jugador = NULL;
+  return nuevoArco;
 }
 
 void aleatorizarVectorTerrenos(Vector *terrenos){
@@ -103,7 +104,12 @@ Vector *generarNumeros(){
   appendVector(numeros, "2");
   appendVector(numeros, "12");
   //mostrar numeros del vector
-  
+  printf("LOS NUMEROS GENERADOS SON: \n");
+  for (uShort i = 0; i < 18; i++){
+    int numero = strtol(getVector(numeros, i), NULL, 10);
+    printf("%i\n", numero);
+  }
+  printf("FIN DE LOS NUMEROS GENERADOS\n");
   shuffleVector(numeros);
   shuffleVector(numeros);
   
@@ -112,16 +118,67 @@ Vector *generarNumeros(){
 
 
 
-Vector *crearTablero(){ //Funcion para crear tablero
+Vector *crearTodosLosHexagonos(){ //Funcion para crear los 19 hexagonos del tablero
   Vector *terrenos = generarTerrenos();
   Vector *numeros = generarNumeros();
   Vector *hexagonos = createVector(19);
-
-  for (uShort i = 0; i < 19; i++){
-    int numero = strtol(getVector(numeros, i), NULL, 10);
+  tipoHexagono *hexagonoAux = NULL;
+  int j = 0;
+  for (int i = 0; i < 19; i++){
+    int numero = strtol(getVector(numeros, j), NULL, 10);
     char *terreno = (char *)(getVector(terrenos, i));
-    tipoHexagono *nuevoHexagono = crearHexagono(numero, terreno, i + 1);
-    appendVector(hexagonos, nuevoHexagono);
+
+    if (terreno == "desierto"){
+      hexagonoAux = crearTipoHexagono(0, terreno, i, true);
+      j--;
+    }
+    else{
+      hexagonoAux = crearTipoHexagono(numero, terreno, i, false);
+    }
+    j++;
+    printf("terreno: %s\n", hexagonoAux->terreno);
+    printf("numero: %d\n", hexagonoAux->numero);
+    printf("ID: %d\n", hexagonoAux->idHexagono);
+    printf("\n");
+    appendVector(hexagonos, hexagonoAux);
+    free(hexagonoAux);
+  }
+  return hexagonos;
+}
+Vector *crearTodosLosArcos(Vector *hexagonos){ //Crea los 42 arcos que unen los hexagonos del tablero
+  tipoHexagono *hexagonoAux = NULL;
+  tipoArco *arcoAux = NULL;
+  int idPreestablecidos[19][6] = {
+    {2, 12, 13, -1, -1, -1},
+    {1, 3, 13, 14, -1, -1},
+    {2, 4, 14, -1, -1, -1},
+    {3, 5, 14, 15, -1, -1},
+    {4, 6, 15, -1, -1, -1},
+    {5, 7, 15, 16, -1, -1},
+    {6, 8, 16, -1, -1, -1},
+    {7, 9, 16, 17, -1, -1},
+    {8, 10, 17, -1, -1, -1},
+    {9, 11, 17, 18, -1, -1},
+    {10, 12, 18, -1, -1, -1},
+    {1, 11, 13, 18, -1, -1},
+    {1, 2, 12, 14, 18, 19},
+    {2, 3, 4, 13, 15, 19},
+    {4, 5, 6, 14, 16, 19},
+    {6, 7, 8, 15, 17, 19},
+    {8, 7, 10, 16, 18, 19},
+    {10, 11, 12, 13, 17, 19},
+    {13, 14, 15, 16, 17, 18},
+  };
+
+  for (int i = 0; i < 19; i++){
+    hexagonoAux = getVector(hexagonos, i);
+    for (int j = 0; j < 6; j++){
+      int ID = idPreestablecidos[i][j];
+      if (ID != -1){
+        arcoAux = crearArco(getVector(hexagonos, i), getVector(hexagonos, ID-1));
+        setVector(hexagonoAux->arcos, j, arcoAux);
+      }
+    }
   }
 
   return hexagonos;
@@ -135,12 +192,6 @@ tipoJugador *crearJugador(char nombre[20]){
   nuevoJugador->edificios = createVector(20);
   return nuevoJugador;
 }
-
-int crearClave(int dato , int capac){ //dato es un numero entre 1 y 19
-  int clave = trunc(dato * (rand() % 100) * 0.5) + 1;
-  return clave % capac;
-}
-
 
 void crearNuevaPartida(){
   uShort cantidadJugadores;
@@ -260,11 +311,11 @@ int main(){
       break;
     case 3:
       printf("Development\n");
-      Vector * vector = generarNumeros();
-      //crearNumeros();
+      
+      //Vector *vector = generarNumeros();
+      crearTablero();
       break;
     }
-    break;
   }
   return EXIT_SUCCESS;
 }
